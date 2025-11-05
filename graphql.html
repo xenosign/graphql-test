@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GraphQL</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .performance-banner {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .performance-title {
+      font-size: 1.2em;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .performance-time {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #764ba2;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title {
+      font-size: 1.5em;
+      color: #667eea;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .loading {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+      font-size: 1.2em;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #c33;
+    }
+
+    .rates-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .rate-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border-radius: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .rate-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .currency-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .currency-code {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #667eea;
+      min-width: 60px;
+    }
+
+    .currency-name {
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .rate-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .execution-time {
+      text-align: right;
+      margin-top: 15px;
+      color: #888;
+      font-size: 0.9em;
+    }
+
+    .todos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .todo-item {
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      transition: all 0.2s;
+    }
+
+    .todo-item:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+
+    .todo-item.completed {
+      border-left-color: #28a745;
+      opacity: 0.7;
+    }
+
+    .todo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .todo-task {
+      font-size: 1.1em;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .todo-item.completed .todo-task {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .todo-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: bold;
+    }
+
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .todo-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85em;
+      color: #666;
+    }
+
+    .refresh-button {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 30px;
+      background: white;
+      color: #667eea;
+      border: 2px solid white;
+      border-radius: 25px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .refresh-button:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .refresh-button:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .currency-code {
+        font-size: 1.5em;
+      }
+
+      .rate-value {
+        font-size: 1.2em;
+      }
+
+      .performance-time {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>📊 환율 정보 & 할 일 목록</h1>
+
+    <div class="performance-banner" id="performance-banner">
+      <div class="performance-title">⚡ 전체 통신 시간</div>
+      <div class="performance-time">측정 중...</div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="section">
+        <h2 class="section-title">💱 실시간 환율</h2>
+        <div id="rates-container">
+          <div class="loading">데이터를 불러오는 중...</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">✅ 할 일 목록</h2>
+        <div id="todos-container">
+          <div class="loading">데이터를 불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="refresh-button" onclick="executeGraphQLQuery()">🔄 새로고침</button>
+  </div>
+
+  <script>
+    const API_CONFIG = {
+      endpoint: 'http://localhost:8080/graphql',
+      token: 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ4ZW5vc2lnbkBuYXZlci5jb20iLCJpYXQiOjE3NjIzMjc2MjAsImV4cCI6MTc2MjMzNjI2MH0.0zZWrq3VLnSZHXhKZcYYohK6355fybbe15K3bgFwd_H9jv2dvRvkJ0-kK0xJIAvcH-OUtuJB0JdJlc9R2xgLFQ',
+      currencyCodes: ["USD", "JPY", "EUR"]
+    };
+
+    const GRAPHQL_QUERY = `
+      query GetRatesAndTodos($currencyCodes: [String!]!) {
+        specificExchangeRates(currencyCodes: $currencyCodes) {
+          rates {
+            currency
+            rate
+          }
+          executionTimeMs
+        },
+        getAllTodos {
+          id
+          task
+          completed
+          createdAt
+        }
+      }
+    `;
+
+    const CURRENCY_NAMES = {
+      'USD': '미국 달러',
+      'JPY': '일본 엔',
+      'EUR': '유로',
+      'GBP': '영국 파운드',
+      'CNY': '중국 위안',
+      'AUD': '호주 달러',
+      'CAD': '캐나다 달러'
+    };
+
+    function updatePerformanceBanner(networkTime) {
+      const banner = document.getElementById('performance-banner');
+      const timeElement = banner.querySelector('.performance-time');
+      timeElement.textContent = `${networkTime}ms`;
+    }
+
+    function renderRates(data, networkTime) {
+      const container = document.getElementById('rates-container');
+
+      if (!data || !data.rates || data.rates.length === 0) {
+        container.innerHTML = '<div class="error">환율 정보를 불러올 수 없습니다.</div>';
+        return;
+      }
+
+      let html = '<div class="rates-grid">';
+
+      data.rates.forEach(rate => {
+        const currencyName = CURRENCY_NAMES[rate.currency] || rate.currency;
+        html += `
+          <div class="rate-card">
+            <div class="currency-info">
+              <div class="currency-code">${rate.currency}</div>
+              <div class="currency-name">${currencyName}</div>
+            </div>
+            <div class="rate-value">₩${rate.rate.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}</div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+
+      if (data.executionTimeMs) {
+        html += `<div class="execution-time">⏱️ 서버 처리: ${data.executionTimeMs}ms</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderTodos(todos) {
+      const container = document.getElementById('todos-container');
+
+      if (!todos || todos.length === 0) {
+        container.innerHTML = '<div class="loading">등록된 할 일이 없습니다.</div>';
+        return;
+      }
+
+      let html = '<div class="todos-list">';
+
+      todos.forEach(todo => {
+        const completedClass = todo.completed ? 'completed' : '';
+        const statusClass = todo.completed ? 'status-completed' : 'status-pending';
+        const statusText = todo.completed ? '완료' : '진행중';
+        const createdDate = new Date(todo.createdAt).toLocaleString('ko-KR');
+
+        html += `
+          <div class="todo-item ${completedClass}">
+            <div class="todo-header">
+              <div class="todo-task">${todo.task}</div>
+              <span class="todo-status ${statusClass}">${statusText}</span>
+            </div>
+            <div class="todo-meta">
+              <span>ID: ${todo.id}</span>
+              <span>생성일: ${createdDate}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    async function executeGraphQLQuery() {
+      const startTime = performance.now();
+
+      try {
+        document.getElementById('rates-container').innerHTML = '<div class="loading">데이터를 불러오는 중...</div>';
+        document.getElementById('todos-container').innerHTML = '<div class="loading">데이터를 불러오는 중...</div>';
+        updatePerformanceBanner('측정 중...');
+
+        const response = await fetch(API_CONFIG.endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_CONFIG.token}`
+          },
+          body: JSON.stringify({
+            query: GRAPHQL_QUERY,
+            variables: { currencyCodes: API_CONFIG.currencyCodes },
+          }),
+        });
+
+        const endTime = performance.now();
+        const networkTime = Math.round(endTime - startTime);
+
+        // 전체 통신 시간 업데이트
+        updatePerformanceBanner(networkTime);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.errors) {
+          throw new Error(result.errors[0].message);
+        }
+
+        if (result.data) {
+          if (result.data.specificExchangeRates) {
+            renderRates(result.data.specificExchangeRates, networkTime);
+          }
+          if (result.data.getAllTodos) {
+            renderTodos(result.data.getAllTodos);
+          }
+        }
+
+        console.log('GraphQL Response:', result);
+        console.log(`전체 통신 시간: ${networkTime}ms`);
+
+      } catch (error) {
+        console.error('Error:', error);
+        updatePerformanceBanner('오류');
+        document.getElementById('rates-container').innerHTML =
+          `<div class="error">❌ 오류: ${error.message}</div>`;
+        document.getElementById('todos-container').innerHTML =
+          `<div class="error">❌ 오류: ${error.message}</div>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', executeGraphQLQuery);
+  </script>
+</body>
+
+</html>
