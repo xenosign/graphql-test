@@ -383,49 +383,52 @@
         weatherCountry: 'KR',
       };
 
-      const GRAPHQL_QUERY = `
-      query GetRatesAndTodosAndWeather($currencyCodes: [String!]!, $city: String!) {
-        specificExchangeRates(currencyCodes: $currencyCodes) {
-          rates {
-            currency
-            rate
+      const GRAPHQL_QUERY = /* GraphQL */ `
+        query GetRatesAndTodosAndWeather(
+          $currencyCodes: [String!]!
+          $city: String!
+        ) {
+          specificExchangeRates(currencyCodes: $currencyCodes) {
+            rates {
+              currency
+              rate
+            }
+            executionTimeMs
           }
-          executionTimeMs
-        },
-        getAllTodos {
-          id
-          task
-          completed
-          createdAt
-        },
-        getWeather(city: $city) {
-          name
-          sys {
-            country
+          getAllTodos {
+            id
+            task
+            completed
+            createdAt
           }
-          main {
-            temp
-            feelsLike
-            humidity
-            pressure
-            tempMin
-            tempMax
+          getWeather(city: $city) {
+            name
+            sys {
+              country
+            }
+            main {
+              temp
+              feelsLike
+              humidity
+              pressure
+              tempMin
+              tempMax
+            }
+            weather {
+              main
+              description
+              icon
+            }
+            wind {
+              speed
+            }
+            clouds {
+              all
+            }
+            visibility
           }
-          weather {
-            main
-            description
-            icon
-          }
-          wind {
-            speed
-          }
-          clouds {
-            all
-          }
-          visibility
         }
-      }
-    `;
+      `;
 
       const CURRENCY_NAMES = {
         USD: '미국 달러',
