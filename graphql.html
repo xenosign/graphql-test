@@ -396,12 +396,21 @@
   </div>
 
   <script>
+    // 로컬
     const API_CONFIG = {
       endpoint: 'http://localhost:8080/graphql',
       token:
         'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ4ZW5vc2lnbkBuYXZlci5jb20iLCJpYXQiOjE3NjMzNjE4MjgsImV4cCI6MTc2MzM3MDQ2OH0.DDda4kLHu50AnqnNCntqw-q4sy4YLlUl2dD1W9hXpV-_N5aEbhAWdBn61MJJpECACzVEEPUPP8Ln4AfPrROPyQ',
       currencyCodes: ['USD', 'JPY', 'EUR'],
     };
+
+    // // 개발
+    // const API_CONFIG = {
+    //   endpoint: 'https://port-0-tetz-night-back-m5yo5gmx92cc34bc.sel4.cloudtype.app/graphql',
+    //   token:
+    //     'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ4ZW5vc2lnbkBuYXZlci5jb20iLCJpYXQiOjE3NjMzNzAyOTEsImV4cCI6MTc2MzM3ODkzMX0.hmIrmFh8IQ60MLL84VJv9OIi47tGKDLFfpsXd_g8r8-aBuDIGQOZgqAHmlGp2WH5kcKaUMXAaz5yLn_CF-CHvA',
+    //   currencyCodes: ['USD', 'JPY', 'EUR'],
+    // };
 
     // 현재 위치 저장
     let currentLocation = null;
